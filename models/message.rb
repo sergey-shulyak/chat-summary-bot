@@ -3,30 +3,28 @@
 require 'sqlite3'
 
 class Message
-  def self.cleanup(db)
-    db.execute('DELETE FROM messages WHERE created_at < ?', [Time.now.to_i])
+  attr_reader :user, :message, :date, :chat_id
+
+  def self.messages_today(db:, chat_id:)
+    db.execute('SELECT * FROM messages WHERE created_at > ? AND chat_id = ?',
+               [Utils::TimeUtils.start_of_today, chat_id])
   end
 
-  def self.messages_today(db)
-    db.execute('SELECT * FROM messages WHERE created_at > ?', [start_of_today])
-  end
-
-  def self.start_of_today
-    now = Time.now
-
-    start_of_day = Time.new(now.year, now.month, now.day)
-
-    start_of_day.to_i
-  end
-
-  def initialize(user, message, date, db:)
-    @db = db
+  def initialize(id:, user:, message:, date:, chat_id:, db:)
+    @id = id
     @user = user
     @message = message
     @date = date
+    @chat_id = chat_id
+    @db = db
   end
 
   def save!
-    @db.execute('INSERT INTO messages (user, message, created_at) VALUES (?, ?, ?)', [@user, @message, @date])
+    @db.execute('INSERT INTO messages (id, user, message, chat_id, created_at) VALUES (?, ?, ?, ?, ?)',
+                [@id, @user, @message, @chat_id, @date])
+  end
+
+  def destroy!
+    @db.execute('DELETE FROM messages WHERE id = ?', [@id])
   end
 end
