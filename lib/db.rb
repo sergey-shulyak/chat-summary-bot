@@ -12,6 +12,10 @@ class DB
     @client.execute('DELETE FROM messages WHERE created_at < ? AND chat_id = ?', [Time.now.to_i, chat_id])
   end
 
+  def clean_all!
+    @client.execute('DELETE FROM messages WHERE created_at < ?', [Time.now.to_i])
+  end
+
   def close
     @client.close
   end

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Start the bot
+echo 'Cleanup...'
+ruby ./clean.rb
+echo 'DB cleaned!'
