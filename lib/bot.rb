@@ -18,7 +18,7 @@ class Bot < Telegram::Bot::Client
   private
 
   def error_chat_id
-    ENV['ERROR_CHAT_ID']
+    ENV.fetch('ERROR_CHAT_ID')
   end
 
   def handle_message(message)
@@ -38,11 +38,8 @@ class Bot < Telegram::Bot::Client
     end
   rescue StandardError => e
     api.send_message(chat_id: message.chat.id, text: 'Беды с башкой, извините')
-    api.send_message(chat_id: error_chat_id, text: "```Ошибка: #{e.message} #{e.backtrace.join("\n\t")}```", parse_mode: 'Markdown')
-  end
-
-  def error_chat_id
-    ENV.fetch('ERROR_CHAT_ID')
+    api.send_message(chat_id: error_chat_id, text: "```Ошибка: #{e.message} #{e.backtrace.join("\n\t")}```",
+                     parse_mode: 'Markdown')
   end
 
   def gpt_client

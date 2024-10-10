@@ -12,7 +12,7 @@ class Message
 
   def self.messages_for_chat_empty?(db:, chat_id:)
     rows = db.execute('SELECT count(*) FROM messages WHERE chat_id = ?', [chat_id])
-    rows[0]&.values[0]&.zero?
+    rows[0].values[0].zero?
   end
 
   def initialize(user:, message:, date:, chat_id:, db:)
