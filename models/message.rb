@@ -10,8 +10,12 @@ class Message
                [Utils::TimeUtils.start_of_today, chat_id])
   end
 
-  def initialize(id:, user:, message:, date:, chat_id:, db:)
-    @id = id
+  def self.messages_for_chat_empty?(db:, chat_id:)
+    rows = db.execute('SELECT count(*) FROM messages WHERE chat_id = ?', [chat_id])
+    rows[0]&.values[0]&.zero?
+  end
+
+  def initialize(user:, message:, date:, chat_id:, db:)
     @user = user
     @message = message
     @date = date
@@ -20,8 +24,8 @@ class Message
   end
 
   def save!
-    @db.execute('INSERT INTO messages (id, user, message, chat_id, created_at) VALUES (?, ?, ?, ?, ?)',
-                [@id, @user, @message, @chat_id, @date])
+    @db.execute('INSERT INTO messages (user, message, chat_id, created_at) VALUES (?, ?, ?, ?)',
+                [@user, @message, @chat_id, @date])
   end
 
   def destroy!

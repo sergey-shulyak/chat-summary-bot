@@ -17,6 +17,10 @@ class Bot < Telegram::Bot::Client
 
   private
 
+  def error_chat_id
+    ENV['ERROR_CHAT_ID']
+  end
+
   def handle_message(message)
     case message.text
     when '/start'
@@ -33,7 +37,12 @@ class Bot < Telegram::Bot::Client
       save_message(message)
     end
   rescue StandardError => e
-    api.send_message(chat_id: message.chat.id, text: "Не вышло: #{e.message}")
+    api.send_message(chat_id: message.chat.id, text: 'Беды с башкой, извините')
+    api.send_message(chat_id: error_chat_id, text: "```Ошибка: #{e.message} #{e.backtrace.join("\n\t")}```", parse_mode: 'Markdown')
+  end
+
+  def error_chat_id
+    ENV.fetch('ERROR_CHAT_ID')
   end
 
   def gpt_client
@@ -42,6 +51,11 @@ class Bot < Telegram::Bot::Client
 
   def send_summary(chat_id)
     api.sendChatAction(chat_id:, action: 'typing')
+
+    if Message.messages_for_chat_empty?(db: @db.client, chat_id:)
+      api.send_message(chat_id:, text: '😥 У меня нет информации о беседе за сегодня')
+      return
+    end
 
     messages = Message.messages_today(db: @db.client, chat_id:).reduce('') do |acc, message|
       "#{acc}#{message['user']}: #{message['message']}\n"
@@ -60,7 +74,6 @@ class Bot < Telegram::Bot::Client
 
   def save_message(message)
     Message.new(
-      id: message.message_id,
       user: message.from.first_name,
       message: message.text,
       date: message.date,
