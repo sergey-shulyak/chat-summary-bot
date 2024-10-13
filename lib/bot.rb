@@ -24,9 +24,9 @@ class Bot < Telegram::Bot::Client
   def handle_message(message)
     case message.text
     when %r{/start}
-      api.send_message(chat_id: message.chat.id, text: "Привет, #{message.from.first_name}")
+      api.send_message(chat_id: message.chat.id, text: "Привіт, #{message.from.first_name}")
     when %r{/stop}
-      api.send_message(chat_id: message.chat.id, text: "Ня пока, #{message.from.first_name}")
+      api.send_message(chat_id: message.chat.id, text: "Бувай, #{message.from.first_name}")
     when %r{/ping}
       api.send_message(chat_id: message.chat.id, text: '🫡')
     when %r{/summary}
@@ -37,8 +37,8 @@ class Bot < Telegram::Bot::Client
       save_message(message)
     end
   rescue StandardError => e
-    api.send_message(chat_id: message.chat.id, text: 'Беды с башкой, извините')
-    api.send_message(chat_id: error_chat_id, text: "```Ошибка: #{e.message} #{e.backtrace.join("\n\t")}```",
+    api.send_message(chat_id: message.chat.id, text: 'Бідося з головою, вибачайте 🥴')
+    api.send_message(chat_id: error_chat_id, text: "```Помилка: #{e.message} #{e.backtrace.join("\n\t")}```",
                      parse_mode: 'Markdown')
   end
 
@@ -50,7 +50,7 @@ class Bot < Telegram::Bot::Client
     api.sendChatAction(chat_id:, action: 'typing')
 
     if Message.messages_for_chat_empty?(db: @db.client, chat_id:)
-      api.send_message(chat_id:, text: '😥 У меня нет информации о беседе за сегодня')
+      api.send_message(chat_id:, text: '😥 У мене немає інформації за сьогодні')
       return
     end
 
@@ -66,7 +66,7 @@ class Bot < Telegram::Bot::Client
   def clean_chat_history!(chat_id)
     api.sendChatAction(chat_id:, action: 'typing')
     @db.cleanup!(chat_id)
-    api.send_message(chat_id:, text: 'База сообщений очищена')
+    api.send_message(chat_id:, text: 'База повідомлень для цього чату очищена')
   end
 
   def save_message(message)
