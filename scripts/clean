@@ -3,4 +3,5 @@
 # Start the bot
 echo 'Cleanup...'
 ruby ./clean.rb
-echo 'DB cleaned!'
+echo "DB cleaned on $(date)"
+echo "DB cleaned on $(date)" >>/home/sshuliak/dev/chat-summary-bot/log/clean.log
