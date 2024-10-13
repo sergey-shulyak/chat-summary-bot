@@ -23,15 +23,15 @@ class Bot < Telegram::Bot::Client
 
   def handle_message(message)
     case message.text
-    when '/start'
+    when %r{/start}
       api.send_message(chat_id: message.chat.id, text: "Привет, #{message.from.first_name}")
-    when '/stop'
+    when %r{/stop}
       api.send_message(chat_id: message.chat.id, text: "Ня пока, #{message.from.first_name}")
-    when '/ping'
+    when %r{/ping}
       api.send_message(chat_id: message.chat.id, text: '🫡')
-    when '/summary'
+    when %r{/summary}
       send_summary(message.chat.id)
-    when '/cleanup'
+    when %r{/cleanup}
       clean_chat_history!(message.chat.id)
     else
       save_message(message)
