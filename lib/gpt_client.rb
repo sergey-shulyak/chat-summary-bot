@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../config/openai'
-
 class GptClient
   PROMPT = <<~PROMPT
     Напиши заголовок "Переказ бесіди за сьогодні".

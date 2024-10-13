@@ -1,13 +1,11 @@
 # frozen_string_literal: true
 
-require 'sqlite3'
-
 class Message
   attr_reader :user, :message, :date, :chat_id
 
   def self.messages_today(db:, chat_id:)
     db.execute('SELECT * FROM messages WHERE created_at > ? AND chat_id = ?',
-               [Utils::TimeUtils.start_of_today, chat_id])
+               [TimeUtils.start_of_today, chat_id])
   end
 
   def self.messages_for_chat_empty?(db:, chat_id:)

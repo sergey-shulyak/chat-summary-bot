@@ -1,10 +1,9 @@
-require_relative './db'
-require_relative '../models/message'
+# frozen_string_literal: true
 
 class Bot < Telegram::Bot::Client
-  def initialize(token, hash = {})
-    @db = hash.delete(:db)
-    super(token, hash)
+  def initialize(token, named_args = {})
+    @db = named_args.delete(:db)
+    super(token, named_args)
   end
 
   def start
@@ -19,6 +18,10 @@ class Bot < Telegram::Bot::Client
 
   def error_chat_id
     ENV.fetch('ERROR_CHAT_ID')
+  end
+
+  def gpt_client
+    @gpt_client ||= GptClient.new
   end
 
   def handle_message(message)
@@ -42,10 +45,6 @@ class Bot < Telegram::Bot::Client
                      parse_mode: 'Markdown')
   end
 
-  def gpt_client
-    @gpt_client ||= GptClient.new
-  end
-
   def send_summary(chat_id)
     api.sendChatAction(chat_id:, action: 'typing')
 
@@ -63,12 +62,6 @@ class Bot < Telegram::Bot::Client
     api.send_message(chat_id:, text: summary, parse_mode: 'HTML')
   end
 
-  def clean_chat_history!(chat_id)
-    api.sendChatAction(chat_id:, action: 'typing')
-    @db.cleanup!(chat_id)
-    api.send_message(chat_id:, text: 'База повідомлень для цього чату очищена')
-  end
-
   def save_message(message)
     Message.new(
       user: message.from.first_name,
@@ -77,5 +70,11 @@ class Bot < Telegram::Bot::Client
       chat_id: message.chat.id,
       db: @db.client
     ).save!
+  end
+
+  def clean_chat_history!(chat_id)
+    api.sendChatAction(chat_id:, action: 'typing')
+    @db.cleanup!(chat_id)
+    api.send_message(chat_id:, text: 'База повідомлень для цього чату очищена')
   end
 end

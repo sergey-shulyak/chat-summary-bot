@@ -1,4 +1,4 @@
-require 'sqlite3'
+# frozen_string_literal: true
 
 class DB
   attr_reader :client
@@ -28,12 +28,12 @@ class DB
 
     # Create a table
     db.execute <<-SQL
-      create table if not exists messages (
-        id integer primary key,
-        user varchar(255),
-        message text,
-        chat_id integer,
-        created_at timestamp
+      CREATE TABLE IF NOT EXISTS messages (
+        id INTEGER PRIMARY KEY,
+        user VARCHAR(255),
+        message TEXT,
+        chat_id INTEGER,
+        created_at TIMESTAMP
       );
     SQL
 
