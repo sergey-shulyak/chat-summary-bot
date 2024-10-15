@@ -27,4 +27,15 @@ class GptClient
 
     response.dig('choices', 0, 'message', 'content')
   end
+
+  def get_prompt_response(prompt)
+    response = client.chat(parameters: {
+                             model: 'gpt-4o-mini',
+                             messages: [
+                               { role: 'user', content: prompt }
+                             ]
+                           })
+
+    response.dig('choices', 0, 'message', 'content')
+  end
 end

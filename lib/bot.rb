@@ -34,6 +34,8 @@ class Bot < Telegram::Bot::Client
       api.send_message(chat_id: message.chat.id, text: '🫡')
     when %r{/summary}
       send_summary(message.chat.id)
+    when %r{/ask}
+      send_prompt_reply(message.chat.id, message.text)
     when %r{/cleanup}
       clean_chat_history!(message.chat.id)
     else
@@ -58,8 +60,18 @@ class Bot < Telegram::Bot::Client
     end
 
     summary = gpt_client.get_summary_response(messages)
-
     api.send_message(chat_id:, text: summary, parse_mode: 'HTML')
+  end
+
+  def send_prompt_reply(chat_id, message)
+    api.sendChatAction(chat_id:, action: 'typing')
+
+    prompt = message.text.gsub(%r{/ask}, '').strip
+
+    api.send_message(chat_id:, text: '🧐 A?') if prompt.empty?
+
+    response = gpt_client.get_prompt_response(prompt)
+    api.send_message(chat_id:, text: response, parse_mode: 'Markdown')
   end
 
   def save_message(message)
