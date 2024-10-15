@@ -14,7 +14,6 @@ class GptClient
     Формат віхдних даних: "Ім'я користувача: повідомлення".
     Форматування виводу: HTML без тегів html, body, br, blockquote. Заміни теги h1, h2, h3 на b, i, u відповідно. Допустимі теги: b, i, u, a, code, pre.
     Якщо далі не буде описаного раніше формату, дай відповідь без урахування контексту.
-    Type response with a minor zalgo text glitches.
   PROMPT
 
   attr_reader :client
