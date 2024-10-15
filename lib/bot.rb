@@ -66,7 +66,7 @@ class Bot < Telegram::Bot::Client
   def send_prompt_reply(chat_id, message)
     api.sendChatAction(chat_id:, action: 'typing')
 
-    prompt = message.text.gsub(%r{/ask}, '').strip
+    prompt = message.gsub(%r{/ask}, '').strip
 
     api.send_message(chat_id:, text: '🧐 A?') if prompt.empty?
 
