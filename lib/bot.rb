@@ -24,6 +24,12 @@ class Bot < Telegram::Bot::Client
     @gpt_client ||= GptClient.new
   end
 
+  def chat_messages_context
+    Message.messages_today(db: @db.client, chat_id:).reduce('') do |acc, message|
+      "#{acc}#{message['user']}: #{message['message']}\n"
+    end
+  end
+
   def handle_message(message)
     case message.text
     when %r{/start}
@@ -55,11 +61,7 @@ class Bot < Telegram::Bot::Client
       return
     end
 
-    messages = Message.messages_today(db: @db.client, chat_id:).reduce('') do |acc, message|
-      "#{acc}#{message['user']}: #{message['message']}\n"
-    end
-
-    summary = gpt_client.get_summary_response(messages)
+    summary = gpt_client.get_summary_response(chat_messages_context)
     api.send_message(chat_id:, text: summary, parse_mode: 'HTML')
   end
 
@@ -70,7 +72,7 @@ class Bot < Telegram::Bot::Client
 
     api.send_message(chat_id:, text: '🧐 A?') if prompt.empty?
 
-    response = gpt_client.get_prompt_response(prompt)
+    response = gpt_client.get_prompt_response(chat_messages_context, prompt)
     api.send_message(chat_id:, text: response, parse_mode: 'Markdown')
   end
 
