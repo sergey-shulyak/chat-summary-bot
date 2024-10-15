@@ -26,7 +26,7 @@ class GptClient
     response = client.chat(parameters: {
                              model: 'gpt-4o-mini',
                              messages: [
-                               { role: 'user', content: SUMMARY_PROMPT },
+                               { role: 'system', content: SUMMARY_PROMPT },
                                { role: 'user', content: text }
                              ]
                            })
@@ -38,8 +38,8 @@ class GptClient
     response = client.chat(parameters: {
                              model: 'gpt-4o-mini',
                              messages: [
-                               { role: 'user', content: CONTEXT_PROMPT },
-                               { role: 'user', content: context },
+                               { role: 'system', content: CONTEXT_PROMPT },
+                               { role: 'system', content: context },
                                { role: 'user', content: prompt }
                              ]
                            })
