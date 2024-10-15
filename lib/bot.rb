@@ -68,12 +68,15 @@ class Bot < Telegram::Bot::Client
   def send_prompt_reply(chat_id, message)
     api.sendChatAction(chat_id:, action: 'typing')
 
-    prompt = message.gsub(%r{/ask|/ask@group_summary_gpt_bot}, '').strip
+    prompt = message.gsub(%r{/ask@group_summary_gpt_bot}, '').gsub(%r{/ask}, '').strip
 
-    api.send_message(chat_id:, text: '😊 Схоже ви забули задати питання') if prompt.empty?
+    if prompt.empty?
+      api.send_message(chat_id:, text: '😊 Схоже ви забули задати питання')
+      return
+    end
 
     response = gpt_client.get_prompt_response(chat_messages_context(chat_id), prompt)
-    api.send_message(chat_id:, text: response, parse_mode: 'Markdown')
+    api.send_message(chat_id:, text: response, parse_mode: 'HTML')
   end
 
   def save_message(message)
